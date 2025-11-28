@@ -31,7 +31,8 @@ function doPost(e) {
         payload.is_completed,
         payload.status,
         payload.notes,
-        new Date().toISOString()
+        new Date().toISOString(),
+        payload.user_email || '' // Add user email
       ]);
       result = { status: 'success', id: payload.id };
     } 
@@ -43,11 +44,12 @@ function doPost(e) {
       for (let i = 1; i < rows.length; i++) {
         if (rows[i][0] == payload.id) {
           // Update columns. Adjust indices as needed.
-          // Structure: id, month, week, day, task, is_completed, status, notes, created_at
+          // Structure: id, month, week, day, task, is_completed, status, notes, created_at, user_email
           sheet.getRange(i + 1, 5).setValue(payload.task);
           sheet.getRange(i + 1, 6).setValue(payload.is_completed);
           sheet.getRange(i + 1, 7).setValue(payload.status);
           sheet.getRange(i + 1, 8).setValue(payload.notes);
+          // We generally don't update user_email or created_at
           break;
         }
       }
@@ -79,7 +81,8 @@ function doPost(e) {
          is_completed: row[5],
          status: row[6],
          notes: row[7],
-         created_at: row[8]
+         created_at: row[8],
+         user_email: row[9] || ''
        }));
        result = { tasks: tasks };
     }
@@ -97,8 +100,9 @@ function doPost(e) {
 
 function setupSheets(ss) {
   const sheets = ['daily_tasks', 'weekly_goals', 'monthly_goals'];
+  // Added user_email to headers
   const headers = {
-    'daily_tasks': ['id', 'month', 'week', 'day', 'task', 'is_completed', 'status', 'notes', 'created_at'],
+    'daily_tasks': ['id', 'month', 'week', 'day', 'task', 'is_completed', 'status', 'notes', 'created_at', 'user_email'],
     'weekly_goals': ['id', 'month', 'week', 'goal', 'created_at'],
     'monthly_goals': ['id', 'month', 'goal', 'created_at']
   };

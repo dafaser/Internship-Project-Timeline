@@ -48,14 +48,16 @@ export const storageService = {
     );
   },
 
-  saveTask: async (task: Task): Promise<void> => {
+  saveTask: async (task: Task, userEmail?: string): Promise<void> => {
+    const taskToSave = { ...task, user_email: userEmail }; // Attach email if provided
+
     const apiUrl = getApiUrl();
     if (apiUrl) {
       // Optimistic update locally first
       const allTasks: Task[] = JSON.parse(localStorage.getItem(STORAGE_KEY_TASKS) || '[]');
       const index = allTasks.findIndex(t => t.id === task.id);
-      if (index >= 0) allTasks[index] = task;
-      else allTasks.push(task);
+      if (index >= 0) allTasks[index] = taskToSave;
+      else allTasks.push(taskToSave);
       localStorage.setItem(STORAGE_KEY_TASKS, JSON.stringify(allTasks));
 
       // Send to API
@@ -65,7 +67,7 @@ export const storageService = {
         headers: { 'Content-Type': 'text/plain;charset=utf-8' },
         body: JSON.stringify({ 
           type: index >= 0 ? 'update_task' : 'create_task', 
-          payload: task 
+          payload: taskToSave 
         })
       }).catch(err => console.error("Sync failed", err));
       return;
@@ -75,9 +77,9 @@ export const storageService = {
     const allTasks: Task[] = JSON.parse(localStorage.getItem(STORAGE_KEY_TASKS) || '[]');
     const index = allTasks.findIndex(t => t.id === task.id);
     if (index >= 0) {
-      allTasks[index] = task;
+      allTasks[index] = taskToSave;
     } else {
-      allTasks.push(task);
+      allTasks.push(taskToSave);
     }
     localStorage.setItem(STORAGE_KEY_TASKS, JSON.stringify(allTasks));
   },

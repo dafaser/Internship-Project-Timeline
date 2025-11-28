@@ -1,3 +1,9 @@
+export interface User {
+  email: string;
+  name: string;
+  picture: string;
+}
+
 export interface Task {
   id: string;
   month: string;
@@ -8,6 +14,7 @@ export interface Task {
   status: 'Not Started' | 'In Progress' | 'Done';
   notes: string;
   created_at: string;
+  user_email?: string; // Added to track who created the task
 }
 
 export interface WeeklyGoal {

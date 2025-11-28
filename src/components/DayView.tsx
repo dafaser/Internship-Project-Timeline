@@ -6,9 +6,10 @@ import { Plus, Trash2, CheckSquare, Square, Save, Loader2, Pencil, X, Check } fr
 interface DayViewProps {
   month: string;
   week: number;
+  userEmail?: string;
 }
 
-export const DayView: React.FC<DayViewProps> = ({ month, week }) => {
+export const DayView: React.FC<DayViewProps> = ({ month, week, userEmail }) => {
   const [selectedDay, setSelectedDay] = useState<string>(DAYS_OF_WEEK[0]);
   const [tasks, setTasks] = useState<Task[]>([]);
   const [loading, setLoading] = useState(false);
@@ -45,11 +46,12 @@ export const DayView: React.FC<DayViewProps> = ({ month, week }) => {
       is_completed: false,
       status: status,
       notes: notes,
-      created_at: new Date().toISOString()
+      created_at: new Date().toISOString(),
+      user_email: userEmail
     };
 
     setTasks([...tasks, newTask]); // Optimistic UI
-    await storageService.saveTask(newTask);
+    await storageService.saveTask(newTask, userEmail);
     
     // Reset Form
     setNewTaskText('');
@@ -60,13 +62,13 @@ export const DayView: React.FC<DayViewProps> = ({ month, week }) => {
   const handleToggleComplete = async (task: Task) => {
     const updatedTask = { ...task, is_completed: !task.is_completed };
     setTasks(tasks.map(t => t.id === task.id ? updatedTask : t));
-    await storageService.saveTask(updatedTask);
+    await storageService.saveTask(updatedTask, userEmail);
   };
 
   const handleStatusChange = async (task: Task, newStatus: Task['status']) => {
     const updatedTask = { ...task, status: newStatus };
     setTasks(tasks.map(t => t.id === task.id ? updatedTask : t));
-    await storageService.saveTask(updatedTask);
+    await storageService.saveTask(updatedTask, userEmail);
   };
 
   const handleDelete = async (taskId: string) => {
@@ -76,7 +78,7 @@ export const DayView: React.FC<DayViewProps> = ({ month, week }) => {
   };
 
   const handleSaveNotes = async (task: Task) => {
-    await storageService.saveTask(task);
+    await storageService.saveTask(task, userEmail);
   };
 
   // Edit Task Name Logic
@@ -91,7 +93,7 @@ export const DayView: React.FC<DayViewProps> = ({ month, week }) => {
     if (task) {
       const updated = { ...task, task: editingText };
       setTasks(tasks.map(t => t.id === editingTaskId ? updated : t));
-      await storageService.saveTask(updated);
+      await storageService.saveTask(updated, userEmail);
     }
     setEditingTaskId(null);
     setEditingText('');
@@ -217,6 +219,13 @@ export const DayView: React.FC<DayViewProps> = ({ month, week }) => {
                         <option value="In Progress">In Progress</option>
                         <option value="Done">Done</option>
                       </select>
+                      
+                      {/* Show user email if available */}
+                      {task.user_email && (
+                         <span className="text-xs text-gray-400 italic">
+                           By: {task.user_email}
+                         </span>
+                      )}
                     </div>
                     
                     {/* Notes Area */}
