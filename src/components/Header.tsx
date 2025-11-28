@@ -20,24 +20,28 @@ export const Header: React.FC<HeaderProps> = ({
   onOpenSettings
 }) => {
   return (
-    <header className="bg-white border-b border-gray-200 sticky top-0 z-10 shadow-sm">
+    <header className="bg-mega-yellow border-b border-orange-400 sticky top-0 z-10 shadow-lg">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-        <div className="flex items-center space-x-2 text-sm sm:text-base font-medium text-mega-dark">
+        <div className="flex items-center space-x-1 text-sm sm:text-base font-bold text-white">
           
           <button 
             onClick={onNavigateHome} 
-            className="flex items-center hover:text-mega-yellow transition-colors"
+            className="flex items-center hover:bg-white/20 px-3 py-2 rounded-lg transition-all duration-200"
           >
-            <Home className="w-4 h-4 mr-1" />
+            <Home className="w-5 h-5 mr-2" />
             <span className="hidden sm:inline">Timeline</span>
           </button>
 
           {currentView !== ViewLevel.MONTHS && (
             <>
-              <ChevronRight className="w-4 h-4 text-gray-400" />
+              <ChevronRight className="w-5 h-5 text-white/60 mx-1" />
               <button 
                 onClick={onNavigateMonth} 
-                className={`hover:text-mega-yellow transition-colors ${currentView === ViewLevel.WEEKS ? 'text-mega-yellow font-bold' : ''}`}
+                className={`px-3 py-2 rounded-lg transition-all duration-200 ${
+                  currentView === ViewLevel.WEEKS 
+                    ? 'bg-white text-mega-yellow shadow-md' 
+                    : 'hover:bg-white/20 text-white'
+                }`}
               >
                 {selectedMonth}
               </button>
@@ -46,18 +50,20 @@ export const Header: React.FC<HeaderProps> = ({
 
           {currentView === ViewLevel.DAYS && selectedWeek && (
             <>
-              <ChevronRight className="w-4 h-4 text-gray-400" />
-              <span className="text-mega-yellow font-bold">Week {selectedWeek}</span>
+              <ChevronRight className="w-5 h-5 text-white/60 mx-1" />
+              <span className="bg-white text-mega-yellow px-3 py-2 rounded-lg shadow-md font-bold">
+                Week {selectedWeek}
+              </span>
             </>
           )}
         </div>
 
         <button 
           onClick={onOpenSettings}
-          className="p-2 text-gray-500 hover:text-mega-yellow hover:bg-gray-50 rounded-full transition-all"
+          className="p-2 text-white hover:bg-white/20 rounded-full transition-all duration-200"
           title="Backend Settings"
         >
-          <Database className="w-5 h-5" />
+          <Database className="w-6 h-6" />
         </button>
       </div>
     </header>

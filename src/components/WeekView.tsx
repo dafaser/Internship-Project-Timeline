@@ -1,5 +1,5 @@
 import React from 'react';
-import { CalendarDays, ArrowRight } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 
 interface WeekViewProps {
   month: string;
