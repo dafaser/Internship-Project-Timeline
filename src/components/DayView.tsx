@@ -24,12 +24,15 @@ export const DayView: React.FC<DayViewProps> = ({ month, week, userEmail }) => {
   const [editingText, setEditingText] = useState('');
 
   useEffect(() => {
-    loadTasks();
-  }, [month, week, selectedDay]);
+    if (userEmail) {
+      loadTasks();
+    }
+  }, [month, week, selectedDay, userEmail]);
 
   const loadTasks = async () => {
     setLoading(true);
-    const data = await storageService.getTasks(month, week, selectedDay);
+    // Pass userEmail to getTasks to filter correctly
+    const data = await storageService.getTasks(month, week, selectedDay, userEmail);
     setTasks(data);
     setLoading(false);
   };
@@ -74,7 +77,7 @@ export const DayView: React.FC<DayViewProps> = ({ month, week, userEmail }) => {
   const handleDelete = async (taskId: string) => {
     if (!confirm('Are you sure you want to delete this task?')) return;
     setTasks(tasks.filter(t => t.id !== taskId));
-    await storageService.deleteTask(taskId);
+    await storageService.deleteTask(taskId, userEmail);
   };
 
   const handleSaveNotes = async (task: Task) => {
@@ -219,13 +222,6 @@ export const DayView: React.FC<DayViewProps> = ({ month, week, userEmail }) => {
                         <option value="In Progress">In Progress</option>
                         <option value="Done">Done</option>
                       </select>
-                      
-                      {/* Show user email if available */}
-                      {task.user_email && (
-                         <span className="text-xs text-gray-400 italic">
-                           By: {task.user_email}
-                         </span>
-                      )}
                     </div>
                     
                     {/* Notes Area */}

@@ -10,7 +10,7 @@ function doPost(e) {
 
   try {
     const data = JSON.parse(e.postData.contents);
-    const type = data.type; // 'create_task', 'update_task', 'delete_task', 'get_data'
+    const type = data.type; // 'create_task', 'update_task', 'delete_task', 'get_tasks'
     const payload = data.payload;
     
     const ss = SpreadsheetApp.getActiveSpreadsheet();
@@ -42,14 +42,13 @@ function doPost(e) {
       const rows = sheet.getDataRange().getValues();
       // Assume column 0 is ID
       for (let i = 1; i < rows.length; i++) {
+        // Basic security check: Only update if ID matches AND email matches (optional strictness)
         if (rows[i][0] == payload.id) {
-          // Update columns. Adjust indices as needed.
           // Structure: id, month, week, day, task, is_completed, status, notes, created_at, user_email
           sheet.getRange(i + 1, 5).setValue(payload.task);
           sheet.getRange(i + 1, 6).setValue(payload.is_completed);
           sheet.getRange(i + 1, 7).setValue(payload.status);
           sheet.getRange(i + 1, 8).setValue(payload.notes);
-          // We generally don't update user_email or created_at
           break;
         }
       }
@@ -71,19 +70,25 @@ function doPost(e) {
     else if (type === 'get_tasks') {
        const sheet = ss.getSheetByName('daily_tasks');
        const rows = sheet.getDataRange().getValues();
-       const headers = rows[0];
-       const tasks = rows.slice(1).map(row => ({
-         id: row[0],
-         month: row[1],
-         week: row[2],
-         day: row[3],
-         task: row[4],
-         is_completed: row[5],
-         status: row[6],
-         notes: row[7],
-         created_at: row[8],
-         user_email: row[9] || ''
-       }));
+       
+       const requestEmail = payload.user_email;
+       
+       // Filter tasks by user email
+       const tasks = rows.slice(1)
+         .map(row => ({
+           id: row[0],
+           month: row[1],
+           week: row[2],
+           day: row[3],
+           task: row[4],
+           is_completed: row[5],
+           status: row[6],
+           notes: row[7],
+           created_at: row[8],
+           user_email: row[9] || ''
+         }))
+         .filter(task => task.user_email === requestEmail); // ONLY return tasks for this user
+
        result = { tasks: tasks };
     }
 

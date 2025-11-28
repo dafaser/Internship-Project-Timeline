@@ -57,7 +57,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose })
               className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-mega-yellow focus:border-mega-yellow outline-none transition-all"
             />
             <p className="text-xs text-gray-500">
-              Leave empty to use LocalStorage (Browser). Paste URL to sync with Sheets.
+              One URL supports multiple users (data is filtered by email).
             </p>
           </div>
 
@@ -65,12 +65,12 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose })
           <div className="bg-yellow-50 border border-yellow-100 rounded-lg p-4 space-y-3">
             <h3 className="text-sm font-bold text-yellow-800">How to setup Google Sheets Backend:</h3>
             <ol className="list-decimal list-inside text-sm text-yellow-800 space-y-1">
-              <li>Create a new Google Sheet.</li>
+              <li>Create a new Google Sheet (or use existing).</li>
               <li>Go to <strong>Extensions &gt; Apps Script</strong>.</li>
-              <li>Copy the code below and paste it into <code>Code.gs</code>.</li>
+              <li>Copy the code below and paste it into <code>Code.gs</code> (overwrite old code).</li>
               <li>Click <strong>Deploy &gt; New deployment</strong>.</li>
               <li>Select type <strong>Web App</strong>.</li>
-              <li>Set "Who has access" to <strong>Anyone</strong> (needed for simple API access).</li>
+              <li>Set "Who has access" to <strong>Anyone</strong> (REQUIRED for functionality).</li>
               <li>Copy the Web App URL and paste it above.</li>
             </ol>
           </div>
