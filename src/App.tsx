@@ -4,7 +4,6 @@ import { Header } from './components/Header';
 import { MonthView } from './components/MonthView';
 import { WeekView } from './components/WeekView';
 import { DayView } from './components/DayView';
-import { SettingsModal } from './components/SettingsModal';
 import { Login } from './components/Login';
 import { jwtDecode } from "jwt-decode";
 import { storageService } from './services/storage';
@@ -20,8 +19,6 @@ const App: React.FC = () => {
     selectedWeek: null,
   });
   
-  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
-
   // Check for existing session
   useEffect(() => {
     const savedUser = localStorage.getItem('megatrack_user');
@@ -70,11 +67,6 @@ const App: React.FC = () => {
     }
   };
 
-  // Override storage save to include user email
-  const handleSaveTaskWithUser = async (task: any) => {
-    await storageService.saveTask(task, user?.email);
-  };
-
   // Render Login if no user
   if (!user) {
     return (
@@ -94,7 +86,6 @@ const App: React.FC = () => {
         user={user}
         onNavigateHome={goHome}
         onNavigateMonth={goBackToMonth}
-        onOpenSettings={() => setIsSettingsOpen(true)}
         onLogout={handleLogout}
       />
 
@@ -114,21 +105,10 @@ const App: React.FC = () => {
           <DayView 
             month={state.selectedMonth} 
             week={state.selectedWeek} 
-            // We need to inject the user email when saving from DayView
-            // However, DayView imports storageService directly.
-            // To be cleanest without refactoring DayView props deeply, 
-            // we will modify DayView to accept a userEmail prop in the next step,
-            // or rely on DayView using the service. 
-            // For now, let's pass the user email via prop to DayView.
             userEmail={user.email}
           />
         )}
       </main>
-
-      <SettingsModal 
-        isOpen={isSettingsOpen} 
-        onClose={() => setIsSettingsOpen(false)} 
-      />
     </div>
   );
 };

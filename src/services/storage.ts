@@ -4,8 +4,19 @@ import { Task } from '../types';
 const BASE_STORAGE_KEY_TASKS = 'megatrack_tasks_';
 const API_URL_KEY = 'megatrack_api_url';
 
-export const getApiUrl = (): string | null => localStorage.getItem(API_URL_KEY);
-export const setApiUrl = (url: string) => localStorage.setItem(API_URL_KEY, url);
+// DEFAULT BACKEND URL (Automatic Connection)
+const DEFAULT_API_URL = 'https://script.google.com/macros/s/AKfycbxD8V-CcawaAfZqVleBPpZngDSeal8bNGi2NwY-TVwWgUceKlqrSOC7jP0oiAXYZk62/exec';
+
+export const getApiUrl = (): string | null => {
+  const stored = localStorage.getItem(API_URL_KEY);
+  // If not set in localStorage, use default.
+  // If set (even empty string), use set value to allow "Local Only" mode.
+  return stored === null ? DEFAULT_API_URL : stored;
+};
+
+export const setApiUrl = (url: string) => {
+  localStorage.setItem(API_URL_KEY, url);
+};
 
 // Helper to get user-specific storage key
 const getUserStorageKey = (email: string) => `${BASE_STORAGE_KEY_TASKS}${email}`;
@@ -20,6 +31,7 @@ export const storageService = {
     if (!userEmail) return []; // Security guard: need email to fetch specific data
 
     const apiUrl = getApiUrl();
+
     if (apiUrl) {
       try {
         // We use text/plain content type to ensure it's a "simple request" 
@@ -64,8 +76,8 @@ export const storageService = {
     }
 
     const taskToSave = { ...task, user_email: userEmail };
-    const apiUrl = getApiUrl();
     const storageKey = getUserStorageKey(userEmail);
+    const apiUrl = getApiUrl();
 
     if (apiUrl) {
       // Optimistic update locally first
@@ -88,7 +100,7 @@ export const storageService = {
       return;
     }
 
-    // Local Only
+    // Local Only (Fallback if apiUrl somehow missing)
     const allTasks: Task[] = JSON.parse(localStorage.getItem(storageKey) || '[]');
     const index = allTasks.findIndex(t => t.id === task.id);
     if (index >= 0) {
@@ -102,8 +114,8 @@ export const storageService = {
   deleteTask: async (taskId: string, userEmail?: string): Promise<void> => {
     if (!userEmail) return;
 
-    const apiUrl = getApiUrl();
     const storageKey = getUserStorageKey(userEmail);
+    const apiUrl = getApiUrl();
 
     if (apiUrl) {
        fetch(apiUrl, {
@@ -112,7 +124,7 @@ export const storageService = {
         headers: { 'Content-Type': 'text/plain;charset=utf-8' },
         body: JSON.stringify({ 
           type: 'delete_task', 
-          payload: { id: taskId, user_email: userEmail } // Pass email for validation if needed in future
+          payload: { id: taskId, user_email: userEmail } 
         })
       }).catch(err => console.error("Sync failed", err));
     }

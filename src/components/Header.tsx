@@ -1,6 +1,6 @@
 import React from 'react';
 import { ViewLevel, User } from '../types';
-import { ChevronRight, Database, Home, LogOut } from 'lucide-react';
+import { ChevronRight, Home, LogOut } from 'lucide-react';
 
 interface HeaderProps {
   currentView: ViewLevel;
@@ -9,7 +9,6 @@ interface HeaderProps {
   user: User | null;
   onNavigateHome: () => void;
   onNavigateMonth: () => void;
-  onOpenSettings: () => void;
   onLogout: () => void;
 }
 
@@ -20,7 +19,6 @@ export const Header: React.FC<HeaderProps> = ({
   user,
   onNavigateHome,
   onNavigateMonth,
-  onOpenSettings,
   onLogout
 }) => {
   return (
@@ -65,16 +63,6 @@ export const Header: React.FC<HeaderProps> = ({
 
         {/* Right: Actions & Profile */}
         <div className="flex items-center gap-2">
-          <button 
-            onClick={onOpenSettings}
-            className="p-2 text-white hover:bg-white/20 rounded-full transition-all duration-200"
-            title="Backend Settings"
-          >
-            <Database className="w-5 h-5 sm:w-6 sm:h-6" />
-          </button>
-
-          <div className="h-6 w-px bg-white/30 mx-1"></div>
-
           {user && (
             <div className="flex items-center gap-3">
               <div className="hidden md:block text-right">
