@@ -1,0 +1,5 @@
+{
+  "name": "MegaTrack Timeline",
+  "description": "A 6-month timeline tracking application with Month, Week, and Daily views using Bank Mega color themes. Features local data persistence with support for Google Sheets integration.",
+  "requestFramePermissions": []
+}
